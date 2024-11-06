@@ -1,9 +1,8 @@
 from .models import Books, Feedback
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from .form import FeedbackForm
 from django.http import HttpResponseRedirect
-
+from django.http import JsonResponse
 
 # получаем все объекты
 books = Books.objects.all()
@@ -21,6 +20,29 @@ print(books.query)
 for book in books:
     print(f"{book.id}.{book.title} - {book.author}")
 
+def filter_books(request):
+    title = request.GET.get('title')
+    author = request.GET.get('author')
+    year = request.GET.get('year')
+
+    books = Books.objects.all() # Replace with your actual filter logic
+
+    if title:
+        books = books.filter(title__icontains=title)
+    if author:
+        books = books.filter(author__icontains=author)
+    if year:
+        books = books.filter(year=year)
+
+    book_data = [{
+        'id': book.id, 
+        'title':book.title,
+        'author': book.author,
+        'year': book.year,
+        'image': book.image.url # Assuming you have an image field
+    } for book in books]
+
+    return JsonResponse(book_data, safe=False)
 
 
   
@@ -28,6 +50,26 @@ def allbooks(request):
     # получаем все объекты
     books = Books.objects.all()
     print(books.query)
+
+     # Фильтрация по названию книги
+    title_query = request.GET.get('title')
+    if title_query:
+        books = books.filter(title__icontains=title_query)
+
+    # Фильтрация по автору
+    author_query = request.GET.get('author')
+    if author_query:
+        books = books.filter(author__icontains=author_query)
+
+    # Фильтрация по году
+    year_query = request.GET.get('year')
+    if year_query:
+        books = books.filter(yearPublish=year_query)
+
+    # Сортировка
+    sort_by = request.GET.get('sort-by')
+    if sort_by in ['title', 'author', 'year']:
+        books = books.order_by(sort_by)  # Сортируем по выбранному полю
     return render(request, "allbooks.html", {'books':books})
 
 def detailbook(request,id_book:int):
