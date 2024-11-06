@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>List popular books</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- <link rel="stylesheet"  href="" type="text/css"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .feed-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .feed-text {
+            font-size: 18px;
+            color: #555;
+            text-align: center;
+        }
+
+        .filter-options {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+
+        .filter-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="search-results"></div>
+    <ul id="book-list">
+        {% for feed in feedback %}
+        <div class="feed-container">
+            <p class="feed-text "><strong>Username:</strong> {{ feed.nameUser }} </p>
+            <p class="feed-text "><strong>Book:</strong> {{ feed.title }} </p>
+            <p class="feed-text "><strong>Feedback:</strong> {{ feed.feedback }} </p>
+        </div>
+        </div>
+        {% endfor %}
+
+        {% for g in group %}
+        <div class="feed-container">
+            <p class="feed-text"><strong>Количество отзывов на </strong> {{ g }} </p>
+        </div>
+        </div>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

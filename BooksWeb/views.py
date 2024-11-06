@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from .form import FeedbackForm
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.db.models import Count
 
 # получаем все объекты
 books = Books.objects.all()
@@ -20,30 +21,17 @@ print(books.query)
 for book in books:
     print(f"{book.id}.{book.title} - {book.author}")
 
-def filter_books(request):
-    title = request.GET.get('title')
-    author = request.GET.get('author')
-    year = request.GET.get('year')
 
-    books = Books.objects.all() # Replace with your actual filter logic
-
-    if title:
-        books = books.filter(title__icontains=title)
-    if author:
-        books = books.filter(author__icontains=author)
-    if year:
-        books = books.filter(year=year)
-
-    book_data = [{
-        'id': book.id, 
-        'title':book.title,
-        'author': book.author,
-        'year': book.year,
-        'image': book.image.url # Assuming you have an image field
-    } for book in books]
-
-    return JsonResponse(book_data, safe=False)
-
+def allfeeadbaks(request):
+    feedbacks = Feedback.objects.all()   
+    books = Books.objects.all()
+    listcount = []
+    for el in books:
+        x = Feedback.objects.filter(title__contains= el.title).count()
+        print(f' Отзыв {el.title}  - {x} ')
+        listcount.append(f'{el.title}  - {x} ')
+    print(listcount)
+    return render(request, "allfeedback.html", {'feedback':feedbacks,"group": listcount})
 
   
 def allbooks(request):
@@ -55,7 +43,7 @@ def allbooks(request):
     title_query = request.GET.get('title')
     if title_query:
         books = books.filter(title__icontains=title_query)
-
+    print(title_query)
     # Фильтрация по автору
     author_query = request.GET.get('author')
     if author_query:
@@ -68,8 +56,10 @@ def allbooks(request):
 
     # Сортировка
     sort_by = request.GET.get('sort-by')
-    if sort_by in ['title', 'author', 'year']:
+    print(sort_by)
+    if sort_by in ['title', 'author', 'yearPublish']:
         books = books.order_by(sort_by)  # Сортируем по выбранному полю
+
     return render(request, "allbooks.html", {'books':books})
 
 def detailbook(request,id_book:int):
