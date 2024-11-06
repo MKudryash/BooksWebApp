@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оставить отзыв на книгу</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .form-style {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: white;
+            /* Цвет фона формы */
+            border: 1px solid #ced4da;
+            /* Цвет границы */
+            border-radius: 8px;
+            /* Закругление углов */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            /* Тень для глубины */
+        }
+
+
+        .form-style label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            /* Жирный шрифт для меток */
+        }
+
+
+        .input-wrapper {
+            position: relative;
+            /* Для позиционирования ошибок */
+            margin-bottom: 15px;
+            /* Отступ между полями */
+        }
+
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            /* Цвет границы */
+            border-radius: 4px;
+            /* Закругление углов */
+            font-size: 14px;
+            transition: border-color 0.3s;
+            /* Плавный переход для изменения цвета границы */
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            border-color: #80bdff;
+            /* Цвет границы при фокусе */
+            outline: none;
+            /* Удаляем обводку по умолчанию */
+        }
+
+        .error-message {
+            color: red;
+            /* Цвет текста ошибок */
+            font-size: 12px;
+            /* Размер шрифта для ошибок */
+            position: absolute;
+            /* Расположение ошибок относительно контейнера */
+            top: 100;
+            left: 0;
+            margin-top: 5px;
+
+            /* Отступ от поля */
+            .feedback-container {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                max-width: 600px;
+                margin: auto;
+            }
+        }
+
+        form {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .star-rating {
+            display: flex;
+            direction: row-reverse;
+            justify-content: flex-start;
+        }
+
+        .star {
+            font-size: 30px;
+            /* Размер звезд */
+            cursor: pointer;
+            color: lightgray;
+            /* Цвет по умолчанию */
+        }
+
+        .star-rating .star {
+            cursor: pointer;
+            /* Курсор указатель для интерактивности */
+        }
+
+        .star-rating .star.active {
+            color: gold;
+            /* Или другой цвет для активных звезд */
+        }
+
+        .star:hover,
+        .star.selected {
+            color: gold;
+            /* Цвет при наведении и выбранной звезде */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Оставить отзыв на книгу</h1>
+
+    <form {% url 'BooksWeb:FeedBackBook' book.id %} id="reviewForm" method="POST">
+        {% csrf_token %}
+        <div class="form-style {% if field.errors %} errors {% endif %} ">
+
+            <div>
+                <label for="id_nameUser"> {{form.nameUser.label}} </label>
+                {{form.nameUser}}
+            </div>
+
+            <div>
+                <label for="id_email"> {{form.email.label}} </label>
+                {{form.email}}
+            </div>
+
+            <div>
+                <label for="id_title"> {{form.title.label}} </label>
+                {{form.title}}
+            </div>
+
+            <div>
+                <label for="id_feedback"> {{form.feedback.label}} </label>
+                {{form.feedback}}
+            </div>
+            <div class="star-rating">
+                <label> {{form.rating.label}} </label>
+                <input type="hidden" name="rating" id="rating" value=" 0 ">
+
+                <label class="star" data-value=" 1 ">
+                    ★
+                </label>
+                <label class="star" data-value=" 2 ">
+                    ★
+                </label>
+                <label class="star" data-value=" 3 ">
+                    ★
+                </label>
+                <label class="star" data-value=" 4 ">
+                    ★
+                </label>
+                <label class="star" data-value=" 5 ">
+                    ★
+                </label>
+
+            </div>
+            <button type="submit">Отправить отзыв</button>
+        </div>
+       
+    </form>
+
+    <script>
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.querySelector('#rating');
+        function setStars(ratingValue) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                if (parseInt(star.dataset.value) <= ratingValue) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                const ratingValue = parseInt(this.dataset.value); // Получаем значение звезды
+                setStars(ratingValue); // Вызываем функцию для обновления звезд
+            });
+        });
+    </script>
+
+</body>
+
+</html>

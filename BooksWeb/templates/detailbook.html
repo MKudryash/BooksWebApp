@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>List popular books</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- <link rel="stylesheet"  href="" type="text/css"> -->
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.book-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.book-image {
+    max-width: 100;
+    max-height: 150px;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+.book-title {
+    font-size: 24px;
+    margin: 10px 0;
+    color: #333;
+    text-align: center;
+}
+
+.book-author,
+.book-year {
+    font-size: 18px;
+    color: #555;
+    text-align: center;
+}
+
+.book-description {
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    text-align: center;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+    </style>
+</head>
+
+<body>
+
+    {% block content %}
+    <div class="book-container">
+        <img src="{{book.image.url}}" alt=" book.title " class="book-image">
+        <h1 class="book-title"> {{ book.title }}</h1>
+        <p class="book-author"><strong>Автор:</strong> {{ book.author }} </p>
+        <p class="book-year"><strong>Год публикации:</strong> {{ book.yearPublish }} </p>
+        <p class="book-description"> {{ book.description }} </p>
+        <button class="back-button" id="addReviewButton">Добавить отзыв на книгу</button>
+        <button class="back-button" id="backToHomeButton">Вернуться на главную</button>
+    </div>
+    {% endblock %}
+    <script>
+        // Обработчик для кнопки "Добавить отзыв на книгу"
+        document.getElementById('addReviewButton').addEventListener('click', function() {
+            window.location.href = "{% url 'BooksWeb:FeedBackBook' book.id %}"; // Укажите URL страницы для добавления отзыва
+        });
+    
+        // Обработчик для кнопки "Вернуться на главную"
+        document.getElementById('backToHomeButton').addEventListener('click', function() {
+            window.history.back(); // Возвращает на предыдущую страницу
+        });
+    </script>
+</body>
+
+</html>
