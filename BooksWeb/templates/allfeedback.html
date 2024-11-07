@@ -138,8 +138,6 @@
         // Функция для обновления списка отзывов
         function updateFeedbackList(feedbacks) {
             feedbackList.innerHTML = ''; // Очистить список
-            console.log("enter update")
-
             feedbacks.forEach(feedback => {
                 const li = document.createElement('div');
                 li.innerHTML = ` <div class="feed-container">
