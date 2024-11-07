@@ -17,8 +17,8 @@ urlpatterns = [
     path('book/feedback/<int:id_book>', views.feedbackbook, name='FeedBackBook'),
 
     path('book/<int:id_book>', views.detailbook, name='DetailInformationBooks'),
-    path('feedback/', views.allfeeadbaks, name='filter_books'),
-    path('feedbacks/', views.feedback_list, name='feedback_list')
+    path('feedback/', views.allfeeadbaks, name='FilterBooks'),
+    path('feedbacks/', views.feedback_list, name='FeedbackList')
     # path('', include('BooksWebApp.urls'))
     # #re_path - позволяет задать адреса URL с помощью регулярных выражений (к примеру откроется и localhost:8000/about и localhost:8000/about/asd )
     # re_path(r'^about/contact', views.contact, name='Contact'),

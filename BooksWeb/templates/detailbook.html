@@ -106,14 +106,12 @@
             /* Цвет по умолчанию */
         }
 
-        
+
 
         .star-rating .star.active {
             color: gold;
             /* Или другой цвет для активных звезд */
         }
-
-
     </style>
 </head>
 
@@ -134,13 +132,13 @@
     <h2>Feedbacks</h2>
     <ul class="feedback-list">
         {% for feedback in feedbacksOnthebook %}
-        <li class="feedback-item">
+        <li class="feedback-item" data-rating="{{ feedback.rating }}">
             <h3>Name user: {{ feedback.nameUser }}</h3>
             <p>Feedback: {{ feedback.feedback }}</p>
             <p>Feedback: {{ feedback.rating }}</p>
             <div class="star-rating">
                 <label> {{form.rating.label}} </label>
-                <input type="hidden" name="rating" id="rating" value="{{feedback.rating}}">
+                <input type="hidden" name="rating" id="rating-{{ forloop.counter }}" value="{{feedback.rating}}">
 
                 <label class="star" data-value=" 1 ">
                     ★
@@ -164,9 +162,7 @@
     </ul>
     {% endblock %}
     <script>
-        const ratingInput = document.querySelector('#rating');
-        function setStars(ratingValue) {
-            const stars = document.querySelectorAll('.star');
+        function setStars(ratingValue,stars) {
             stars.forEach(star => {
                 if (parseInt(star.dataset.value) <= ratingValue) {
                     star.classList.add('active');
@@ -175,10 +171,17 @@
                 }
             });
         }
-        setStars(ratingInput.value)
+
+        const feedbackItems = document.querySelectorAll('.feedback-item');
+        feedbackItems.forEach(item => {
+            const ratingValue = item.dataset.rating;
+            console.log(ratingValue)
+            const stars = item.querySelectorAll('.star');
+            setStars(ratingValue,stars);
+        });
         // Обработчик для кнопки "Добавить отзыв на книгу"
         document.getElementById('addReviewButton').addEventListener('click', function () {
-            window.location.href = "{% url 'BooksWeb:FeedBackBook' book.id %}"; // Укажите URL страницы для добавления отзыва
+            window.location.href = "{% url 'BooksWeb:FeedBackBook' book.id %}"; 
         });
 
         // Обработчик для кнопки "Вернуться на главную"

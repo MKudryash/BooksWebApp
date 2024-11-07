@@ -100,7 +100,7 @@ def detailbook(request,id_book:int):
     feedbacksOnthebook = Feedback.objects.filter(title__contains= book.title)
     avg_rating = feedbacksOnthebook.aggregate(Avg('rating'))['rating__avg']
     print(f"Средний рейтинг для книги '{book.title}': {avg_rating}")
-    return render(request, "detailbook.html", {'book':book,'countFeedback':feedbacksOnthebook.count(), 'avgRating': avg_rating, 'feedbacksOnthebook': feedbacksOnthebook})
+    return render(request, "detailbook.html", {'book':book,'countFeedback':feedbacksOnthebook.count(), 'avgRating': round(avg_rating,2), 'feedbacksOnthebook': feedbacksOnthebook})
 
     
 def feedbackbook(request,id_book:int):
@@ -121,7 +121,7 @@ def feedbackbook(request,id_book:int):
                 rating=form.cleaned_data['rating']
             )
             feed.save()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(f'/book/{id_book}')
     else:
          form = FeedbackForm(
              initial= {'title': book_title}
