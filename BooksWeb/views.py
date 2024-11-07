@@ -4,6 +4,7 @@ from .form import FeedbackForm
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.db.models import Count
+from django.db.models import Avg
 
 # получаем все объекты
 books = Books.objects.all()
@@ -21,17 +22,47 @@ print(books.query)
 for book in books:
     print(f"{book.id}.{book.title} - {book.author}")
 
+def feedback_list(request):
+    feedbacks = Feedback.objects.all()
+    # Фильтрация
+    name = request.GET.get('name')
+    title = request.GET.get('title')
+    rating = request.GET.get('rating')
+    if name:
+        feedbacks = feedbacks.filter(nameUser__icontains=name)
+    if title:
+        feedbacks = feedbacks.filter(title__icontains=title)
+    if rating:
+        feedbacks = feedbacks.filter(rating=rating)
+
+    # Сортировка
+    sort_by = request.GET.get('sort-by')
+    if sort_by in ['nameUser', 'title', 'rating']:
+        feedbacks = feedbacks.order_by(sort_by)
+
+    feedback_data = [        
+            {'nameUser': feedback.nameUser,
+            'title': feedback.title,
+            'email': feedback.email,
+            'feedback': feedback.feedback,
+            'rating': feedback.rating,
+            }
+        for feedback in feedbacks
+    ]
+    
+    return JsonResponse(feedback_data, safe=False)
+ 
+
 
 def allfeeadbaks(request):
-    feedbacks = Feedback.objects.all()   
     books = Books.objects.all()
     listcount = []
+
     for el in books:
-        x = Feedback.objects.filter(title__contains= el.title).count()
-        print(f' Отзыв {el.title}  - {x} ')
-        listcount.append(f'{el.title}  - {x} ')
-    print(listcount)
-    return render(request, "allfeedback.html", {'feedback':feedbacks,"group": listcount})
+        x = Feedback.objects.filter(title__contains= el.title).count() 
+        listcount.append(f'{el.title}  - {x}')
+
+    return render(request, "allfeedback.html", {"group": listcount})
 
   
 def allbooks(request):
@@ -64,9 +95,14 @@ def allbooks(request):
 
 def detailbook(request,id_book:int):
     # получаем объект
+        
     book = get_object_or_404(Books, id = id_book)
-    return render(request, "detailbook.html", {'book':book})
+    feedbacksOnthebook = Feedback.objects.filter(title__contains= book.title)
+    avg_rating = feedbacksOnthebook.aggregate(Avg('rating'))['rating__avg']
+    print(f"Средний рейтинг для книги '{book.title}': {avg_rating}")
+    return render(request, "detailbook.html", {'book':book,'countFeedback':feedbacksOnthebook.count(), 'avgRating': avg_rating, 'feedbacksOnthebook': feedbacksOnthebook})
 
+    
 def feedbackbook(request,id_book:int):
     # получаем объект
     book = get_object_or_404(Books, id = id_book)

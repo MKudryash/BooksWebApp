@@ -138,11 +138,11 @@
 
 <body>
     <div class="filter-options">
-        <form method="GET" action="">
+        <form id="search-form" method="GET" action="">
             <input type="text" name="title" placeholder="Search by title" value="" id="search-title">
             <input type="text" name="author" placeholder="Search by author" value="" id="search-author">
             <input type="number" name="year" placeholder="Search by year" value="" id="search-year">
-            <select  name="sort-by" id="sort-by">
+            <select name="sort-by" id="sort-by">
                 <option value="">Sort by</option>
                 <option value="title">Title</option>
                 <option value="author">Author</option>
@@ -153,7 +153,7 @@
     </div>
 
     <div id="search-results"></div>
-    <ul id="book-list">
+    <ul id="book-list" class="book-list">
         {% for book in books %}
         <div class="book-container">
             <img src="media/{{book.image}}" alt=" book.title " class="book-image">

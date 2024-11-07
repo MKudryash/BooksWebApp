@@ -12,6 +12,7 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            text-align: center;
         }
 
         .feed-container {
@@ -22,61 +23,144 @@
             max-width: 600px;
             margin: auto;
         }
+
         .feed-text {
             font-size: 18px;
             color: #555;
             text-align: center;
         }
-
-        .filter-options {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-
-        .filter-form {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-
-        .filter-input {
-            padding: 10px;
+        input,
+        textarea,
+        select {
+            width: 100;
+            padding: 8px;
+            margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: 16px;
+        }
+
+        .filter-input:focus {
+            border-color: #007bff;
+            /* Цвет рамки при фокусе */
+            outline: none;
+            /* Убираем стандартный контур */
+        }
+
+        input[type="text"] textarea {
+            width: 100;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            /* Цвет границы */
+            border-radius: 4px;
+            /* Закругление углов */
+            font-size: 14px;
             transition: border-color 0.3s;
+            /* Плавный переход для изменения цвета границы */
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #80bdff;
+            /* Цвет границы при фокусе */
+            outline: none;
+            /* Удаляем обводку по умолчанию */
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 15px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 
-<body>
+<body>  
+    <div class="filter-options">
+        <form method="GET" action="">
+            <input type="text" name="name" placeholder="Search by name" value="" id="search-name">
+            <input type="text" name="title" placeholder="Search by title" value="" id="search-title">
+            <select name="rating" id="search-rating">
+                <option value="">Any rating</option>
+                <option value="1">1 star</option>
+                <option value="2">2 stars</option>
+                <option value="3">3 stars</option>
+                <option value="4">4 stars</option>
+                <option value="5">5 stars</option>
+            </select>
+            <select name="sort-by" id="sort-by">
+                <option value="">Sort by</option>
+                <option value="nameUser">Name</option>
+                <option value="title">Title</option>
+                <option value="rating">Rating</option>
+            </select>
+            <button class="back-button" type="submit">Reset</button>
+        </form>
+    </div>
 
-    <div id="search-results"></div>
-    <ul id="book-list">
-        {% for feed in feedback %}
-        <div class="feed-container">
-            <p class="feed-text "><strong>Username:</strong> {{ feed.nameUser }} </p>
-            <p class="feed-text "><strong>Book:</strong> {{ feed.title }} </p>
-            <p class="feed-text "><strong>Feedback:</strong> {{ feed.feedback }} </p>
-        </div>
-        </div>
-        {% endfor %}
-
-        {% for g in group %}
-        <div class="feed-container">
-            <p class="feed-text"><strong>Количество отзывов на </strong> {{ g }} </p>
-        </div>
-        </div>
-        {% endfor %}
+    <h1>Список отзывов</h1>
+    <ul id="feedback-list">
     </ul>
+    <script src="https - FORBIDDEN - ajax.googleapis - FORBIDDEN - /ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+
+        const searchNameInput = document.getElementById('search-name');
+        const searchTitleInput = document.getElementById('search-title');
+        const searchRatingSelect = document.getElementById('search-rating');
+        const sortBySelect = document.getElementById('sort-by');
+        const feedbackList = document.getElementById('feedback-list');
+        // Функция для отправки AJAX-запроса
+       async function fetchFeedbacks() {
+        console.log('enter')
+            const name = searchNameInput.value;
+            const title = searchTitleInput.value;
+            const rating = searchRatingSelect.value;
+            const sortBy = sortBySelect.value;
+            const url = `/feedbacks/?name=${name}&title=${title}&rating=${rating}&sort-by=${sortBy}`;
+
+           console.log(url)
+            fetch(url)
+                .then(response => response.json())
+                .then(feedbacks => {
+                    updateFeedbackList(feedbacks);
+                });
+        }
+        
+        // Функция для обновления списка отзывов
+        function updateFeedbackList(feedbacks) {
+            feedbackList.innerHTML = ''; // Очистить список
+            console.log("enter update")
+
+            feedbacks.forEach(feedback => {
+                const li = document.createElement('div');
+                li.innerHTML = ` <div class="feed-container">
+                           <p class="feed-text ">Title book: ${feedback.title}</p> 
+                           <p class="feed-text ">Author: ${feedback.nameUser}</p> 
+                           <p class="feed-text ">Rating: ${feedback.rating}</p>
+                           <p class="feed-text ">Feedback: ${feedback.feedback}</p> </div>`;
+                feedbackList.appendChild(li);
+            });
+        }
+
+        // Обработчики событий для элементов формы
+        searchNameInput.addEventListener('input', fetchFeedbacks);
+        searchTitleInput.addEventListener('input', fetchFeedbacks);
+        searchRatingSelect.addEventListener('change', fetchFeedbacks);
+        sortBySelect.addEventListener('change', fetchFeedbacks);
+
+        // Инициализировать список при загрузке страницы
+        fetchFeedbacks();
+
+    </script>
 </body>
 
 </html>
